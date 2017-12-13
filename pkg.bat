@@ -1,1 +1,1 @@
-pyinstaller -F --i 
+pyinstaller -F --i util/bitbug_favicon.ico main.py bet/bets.py bet/httper.py receivenumber.py bet/settings.py util/common.py util/jsondata.py util/mylogger.py util/periods.py
