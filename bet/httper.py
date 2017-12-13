@@ -6,7 +6,7 @@ import json
 
 import requests
 
-from settings import HttperConstant
+from bet.settings import HttperConstant
 
 
 class Httper(object):

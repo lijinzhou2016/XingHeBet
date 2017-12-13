@@ -1,16 +1,17 @@
 import traceback
 import json
 import os, sys
+import codecs
 import time
 
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 util_dir = os.path.join(base_dir, 'util')
 sys.path.append(util_dir)
 
-from httper import Httper
-from settings import ReceiveNumberConstant
-from periods import Periods
-from common import get_time
+from bet.httper import Httper
+from bet.settings import ReceiveNumberConstant
+from util.periods import Periods
+from util.common import get_time
 
 
 class Receive(object):
@@ -54,7 +55,7 @@ class Receive(object):
 
     def get_numbers(self):
         try:
-            with open(self.__save_numbers_file_name, 'r') as f:
+            with codecs.open(self.__save_numbers_file_name, 'r', 'utf-8') as f:
                 return f.read()
         except Exception as e:
             traceback.print_exc()

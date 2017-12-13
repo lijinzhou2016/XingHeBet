@@ -27,7 +27,7 @@ class HttperConstant(object):
 class ReceiveNumberConstant(object):
     RECEIVE_NUMBER_URL = ''
     SAVE_NUMBERS_LOG_FLAG = True
-    SAVE_NUMBERS_FILE_NAME = './.numbers.json'
+    SAVE_NUMBERS_FILE_NAME = '.numbers.json'
 
 
 class BetsConstant(object):

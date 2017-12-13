@@ -8,12 +8,15 @@ base_dir = os.path.dirname(os.path.abspath(__file__))
 bet_dir = os.path.join(base_dir, 'bet')
 util_dir = os.path.join(base_dir, 'util')
 
-from bets import Bets
-from periods import Periods
-from common import Delay
-from receivenumber import Receive
-from mylogger import log
-from settings import BetsConstant
+sys.path.append(base_dir)
+sys.path.append(bet_dir)
+sys.path.append(util_dir)
+from bet.bets import Bets
+from util.periods import Periods
+from util.common import Delay
+from bet.receivenumber import Receive
+from util.mylogger import log
+from bet.settings import BetsConstant
 
 
 if __name__ == "__main__":

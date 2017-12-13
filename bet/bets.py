@@ -1,10 +1,10 @@
 import time
 import json
 
-from httper import Httper
-from receivenumber import Receive
-from settings import BetsConstant
-from periods import Periods
+from bet.httper import Httper
+from bet.receivenumber import Receive
+from bet.settings import BetsConstant
+from util.periods import Periods
 
 
 class Bets(object):
@@ -28,7 +28,7 @@ class Bets(object):
         gid = self.__periods.get_periods()
         data = json.loads(self.__receive.get_numbers())
         data['betOrders'][0]["expect"] = str(gid)
-        print(data)
+        # print(data)
         return {'betForm': json.dumps(data)}
 
     def __format_url(self):

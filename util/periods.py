@@ -6,8 +6,8 @@ import os
 import sys
 import json
 import traceback
-from jsondata import TIME_PERIODS_JSON
-from common import get_time
+from util.jsondata import TIME_PERIODS_JSON
+from util.common import get_time
 
 
 class Periods(object):
