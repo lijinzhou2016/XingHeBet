@@ -96,7 +96,6 @@ class Httper(object):
         try:
             rs = requests.post(url, data=data, headers=headers, timeout=timeout)
             if rs.status_code == 200:
-                print(rs.text)
                 return rs.text
             else:
                 return None

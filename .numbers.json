@@ -1,7 +1,7 @@
 {
     "code": "cqssc",
-    "quantity": 1,
-    "totalMoney": 2,
+    "quantity": 2,
+    "totalMoney": 0,
     "betOrders": [
         {
             "expect": "20171212090",
@@ -13,5 +13,6 @@
             "betAmount": "1",
             "memo": ""
         }
+
     ]
 }

@@ -54,9 +54,14 @@ if __name__ == "__main__":
         #     log.error(note)
         #     continue
 
+        post_data = receive.get_numbers()
+        log.info(gid)
+        log.info(bets.display_numbers(post_data))
+
         for loop in range(4):
             try:
-                rs = bets.buy_numbers()
+                rs = bets.buy_numbers(gid, post_data)
+                # print(rs)
 
                 if rs is None:
                     log.error('Bet Server No Response')
@@ -65,16 +70,13 @@ if __name__ == "__main__":
                 if BetsConstant.BET_SUCCESS_STATUS in rs:
                     log.info(BetsConstant.BET_SUCCESS_STATUS)
                     break
-                if BetsConstant.BET_ODD_UPDATE_STATUS in rs:
-                    log.error('赔率发生变化')
-                    delay.random_delay(5, 10)
+                if BetsConstant.BET_PARMS_ERROR_STATUS in rs:
+                    log.error(BetsConstant.BET_PARMS_ERROR_STATUS)
+                    break
                 if BetsConstant.BET_COOKIE_OVER_TIME_STATUS in rs:
                     log.error('cookie 失效')
                     bets.reset_cookie()
                     continue
-                if BetsConstant.BET_PERIODS_OVER_TIME_STATUS in rs:
-                    log.error('该期停止投注')
-                    break
             except Exception as e:
                 log.error(str(traceback.print_exc()))
                 continue

@@ -8,7 +8,7 @@ class HttperConstant(object):
     TEST_COOKIES_DATA = {
         "code": "cqssc",
         "quantity": 1,
-        "totalMoney": 2,
+        "totalMoney": 1,
         "betOrders": [
             {
                 "expect": "20171212090",
@@ -33,7 +33,7 @@ class ReceiveNumberConstant(object):
 class BetsConstant(object):
     BUY_NUMBERS_URL = 'https://vs5566.net/lottery/ssc/cqssc/saveBetOrder.html?t={0}'
     BET_SUCCESS_STATUS = '下注成功'
-    BET_PERIODS_OVER_TIME_STATUS = '下注期数已过期'
+    BET_PARMS_ERROR_STATUS = '下注期数已过期'
     BET_ODD_UPDATE_STATUS = '参数有误'
     BET_COOKIE_OVER_TIME_STATUS = 'login.html'
 

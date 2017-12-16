@@ -36,7 +36,7 @@ class Receive(object):
         return self.__save_path
 
     def __write(self, path, data):
-        with open(path, 'w') as f:
+        with codecs.open(path, 'w', 'utf-8') as f:
             f.write(data)
 
     def __save_number(self, numbers, periods):

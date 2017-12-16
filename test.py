@@ -31,7 +31,7 @@ post_data = {
     "totalMoney": 2,
     "betOrders": [
         {
-            "expect": "20171213063",
+            "expect": "20171216044",
             "code": "cqssc",
             "betCode": "ten_thousand",
             "playCode": "one_big_small",
@@ -43,12 +43,14 @@ post_data = {
     ]
 }
 post_headers ={
-    'Cookie':'SID=C2YoCU9cXQqkO8zuQhU5/ZGOkfvL3Z0On71X/EYfIK9YptwAeQa7LyzTjweDw0D3Op0hwD31s5gdQnDvc9iu+g=='
+    'Cookie':'kfLDbz3GXeFlr7J5HM9MLF+ocMXMuXk+M1xM9EvkVDBgmEwDubrRVRHF2o/4U+yhtN/7bAwD4DP80E3B02f9Ng==',
+    'User-Agent':'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36'
+
 }
 
 post_url = 'https://vs5566.net/lottery/ssc/cqssc/saveBetOrder.html?t={0}'.format(str(round(time.time(), 3)).replace(".",""))
 # print(post_data)
-# print(post_url)
+print(post_url)
 #
 rs = requests.post(post_url, headers=post_headers, data={'betForm': json.dumps(post_data)})
 print(rs.text)
