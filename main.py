@@ -1,8 +1,8 @@
 import os
 import sys
-import time
-import json
 import traceback
+import codecs
+import time
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
 bet_dir = os.path.join(base_dir, 'bet')
@@ -16,20 +16,56 @@ from util.periods import Periods
 from util.common import Delay
 from bet.receivenumber import Receive
 from util.mylogger import log
-from bet.settings import BetsConstant
+from settings import BetsConstant
+from httper import get_cookie
+from settings import conf
+from util.sendermsg import Phone, Sender
+from users import Users
+from bet.receivenumber import get_bet_code
 
+
+# https://www.vs5566.net/
+# bigman971225
+# chen971225
+
+
+ph_list = conf['phone']
+ph_obj = Phone()
+
+def send_msg(msg):
+    for ph in ph_list:
+        sender = Sender(ph)
+        sender.send(msg)
+        time.sleep(3)
 
 if __name__ == "__main__":
-    bets = Bets()
+
+    cookie = get_cookie()
+    if not cookie:
+        print(u"自动登录失败，请稍后再试")
+        time.sleep(3)
+        exit(-1)
+    bets = Bets(cookie)     # 设置cookies
+    bets.set_first_token()  # 下注字token字段
+
+    user = Users()
+    if not user.check_user():
+        print(u"账号："+conf['account'] + u" 不存在")
+        time.sleep(3)
+        exit(-1)
+    else:
+        print(u"=== 自动下注工具账号验证成功")
+
+
+
     periods = Periods()
     delay = Delay()
     receive = Receive()
 
-    bets.init_cookie()
     gid = periods.get_periods()
     before_gid = 0
     while True:
-        while periods.is_sleep_time():
+        while periods.is_sleep_time():  #
             delay.display_time()
         else:
             print()
@@ -45,18 +81,15 @@ if __name__ == "__main__":
             else:
                 before_gid = gid
                 if periods.is_interval_10_minute():  # 若10分钟一期，延时2-3分钟购买
-                    delay.random_delay(100, 150)
-                else:  # 若5分钟一期，延时1-2分钟购买
-                    delay.random_delay(50, 100)
+                    delay.random_delay(120, 180)
+                else:  # 若5分钟一期，延时1分钟购买
+                    delay.delay(60)
 
-        # status, note = receive.receive_and_save()
-        # if not status:
-        #     log.error(note)
-        #     continue
+        post_data = get_bet_code()
+        if not post_data:
+            continue
 
-        post_data = receive.get_numbers()
         log.info(gid)
-        log.info(bets.display_numbers(post_data))
 
         for loop in range(4):
             try:
@@ -75,7 +108,7 @@ if __name__ == "__main__":
                     break
                 if BetsConstant.BET_COOKIE_OVER_TIME_STATUS in rs:
                     log.error('cookie 失效')
-                    bets.reset_cookie()
+                    bets.set_cookie()
                     continue
             except Exception as e:
                 log.error(str(traceback.print_exc()))

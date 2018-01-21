@@ -1,12 +1,98 @@
+import json
 import os
-import sys
 import time
 import traceback
-import json
 
 import requests
 
-from bet.settings import HttperConstant
+from settings import HttperConstant
+
+try:
+    import cookielib
+except:
+    import http.cookiejar as cookielib
+import re
+
+from settings import BetsConstant
+from common import get_login_time_stamp
+from settings import conf
+from yudama3 import get_captcha
+
+
+def auto_login():
+    index_url = "https://vs5566.net/"
+    login_url = "https://www.vs5566.net/passport/login.html?t={0}"
+    captcha = ""
+    captcha_flag=False
+
+
+    try:
+        rs = requests.get(index_url, timeout=60)
+        if rs.status_code == 200:
+            lines = rs.text.split("\n")
+            for line in lines:
+
+                if '<img class="_vr_captcha_code" data-code="loginTop" src="/pcenter/captcha/loginTop.html?t=' in line:
+                    print(line)
+                    captcha_flag = True
+                    api = line.replace('<img class="_vr_captcha_code" data-code="loginTop" src="',"").replace('"', "").strip()
+                    url = index_url + api
+                    rs = requests.get(url, timeout=60)
+                    if rs.status_code == 200:
+                        with open("loginTop.jpeg", 'wb') as f:
+                            f.write(rs.content)
+                if '<div class="form-group form-group-sm scode _vr_captcha_box" style="display: none">' in line:
+                    # print("不需要验证码")
+                    break
+
+    except Exception as e:
+        traceback.print_exc()
+        time.sleep(5)
+        exit(-1)
+
+    if captcha_flag:
+        captcha = get_captcha(conf['yundama_user'], conf['yundama_pwd'])
+        print("验证码：" + captcha)
+
+    post_url = login_url.format(get_login_time_stamp())
+    headers = {
+        "Soul-Requested-With":"XMLHttpRequest"
+    }
+
+    post_data = {
+            "type": "top",
+            "username": conf['xinghe_user'],
+            "password": conf['xinghe_pwd'],
+            "captcha": captcha
+        }
+    # print(post_data)
+    # print(post_url)
+
+    try:
+        rs = requests.post(post_url, data=post_data, headers=headers, timeout=60)
+        if rs.status_code == 200:
+            if rs.json().get("success"):
+                print(u"=== 登录星河网站成功")
+                return rs.headers['Set-Cookie']
+            else:
+                return None
+
+        else:
+            return None
+    except Exception as e:
+        traceback.print_exc()
+        return None
+
+
+def get_cookie():
+    for i in range(3):
+        cookie = auto_login()
+        if cookie:
+            return cookie
+        time.sleep(3)
+    return None
+
+
 
 
 class Httper(object):
@@ -116,29 +202,32 @@ class Httper(object):
             return None
 
 
-if __name__ == "__main__":
-    httper = Httper()
-    if not httper.set_cookie(local=True):
-        if not httper.set_cookie():
-            httper.set_cookie()
+# if __name__ == "__main__":
+#     login = AutoLogin()
+#     login.login()
 
-    post_data = {
-        "code": "cqssc",
-        "quantity": 1,
-        "totalMoney": 2,
-        "betOrders": [
-            {
-                "expect": "20171212100",
-                "code": "cqssc",
-                "betCode": "ten_thousand",
-                "playCode": "one_big_small",
-                "betNum": "大",
-                "odd": "1.98",
-                "betAmount": "1",
-                "memo": ""
-            }
-        ]
-    }
-
-    rs = httper.post(HttperConstant.BET_URL, data={'betForm': json.dumps(post_data)})
-    print(rs)
+    # httper = Httper()
+    # if not httper.set_cookie(local=True):
+    #     if not httper.set_cookie():
+    #         httper.set_cookie()
+    #
+    # post_data = {
+    #     "code": "cqssc",
+    #     "quantity": 1,
+    #     "totalMoney": 2,
+    #     "betOrders": [
+    #         {
+    #             "expect": "20171212100",
+    #             "code": "cqssc",
+    #             "betCode": "ten_thousand",
+    #             "playCode": "one_big_small",
+    #             "betNum": "大",
+    #             "odd": "1.98",
+    #             "betAmount": "1",
+    #             "memo": ""
+    #         }
+    #     ]
+    # }
+    #
+    # rs = httper.post(HttperConstant.BET_URL, data={'betForm': json.dumps(post_data)})
+    # print(rs)

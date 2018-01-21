@@ -1,18 +1,1 @@
-{
-    "code": "cqssc",
-    "quantity": 2,
-    "totalMoney": 0,
-    "betOrders": [
-        {
-            "expect": "20171212090",
-            "code": "cqssc",
-            "betCode": "ten_thousand",
-            "playCode": "one_big_small",
-            "betNum": "大",
-            "odd": "1.98",
-            "betAmount": "1",
-            "memo": ""
-        }
-
-    ]
-}
+{"fifth":[],"first":[{"money":2,"property":"shuang"},{"money":2,"property":"zhi"}],"fourth":[{"money":2,"property":"dan"}],"hasDate":true,"isbet":true,"money":[2],"period":"20180122010","second":[{"money":2,"property":"shuang"},{"money":2,"property":"he"}],"third":[{"money":2,"property":"xiao"},{"money":2,"property":"he"}]}

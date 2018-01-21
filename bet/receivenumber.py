@@ -1,23 +1,26 @@
-import traceback
-import json
-import os, sys
 import codecs
-import time
+import json
+import os
+import sys
+import traceback
+import requests
 
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 util_dir = os.path.join(base_dir, 'util')
 sys.path.append(util_dir)
 
 from bet.httper import Httper
-from bet.settings import ReceiveNumberConstant
+from settings import ReceiveNumberConstant
 from util.periods import Periods
 from util.common import get_time
+from settings import conf
+from common import Delay
 
 
 class Receive(object):
-    def __init__(self, url=ReceiveNumberConstant.RECEIVE_NUMBER_URL,
+    def __init__(self, url=conf.get("server_url") + ReceiveNumberConstant.RECEIVE_NUMBER_API,
                  save_number=ReceiveNumberConstant.SAVE_NUMBERS_LOG_FLAG,
-                 save_number_file_name = ReceiveNumberConstant.SAVE_NUMBERS_FILE_NAME):
+                 save_number_file_name=ReceiveNumberConstant.SAVE_NUMBERS_FILE_NAME):
         self.__url = url
         self.__save_numbers_log_flag = save_number
         self.__save_numbers_file_name = save_number_file_name
@@ -47,11 +50,18 @@ class Receive(object):
             self.__write(file_path, numbers)
 
     def __receive_number(self, periods):
-        rs = self.__httper.get(self.__url.format(periods))
-        if rs is None:
+        try:
+            url = self.__url.format(conf['account'], periods)
+            print(url)
+            rs = requests.get(url, timeout=10)
+            if rs.status_code == 200:
+                return rs.text
+            else:
+                return None
+        except Exception as e:
+            print(u"请求发号器异常")
+            traceback.print_exc()
             return None
-        else:
-            return rs
 
     def get_numbers(self):
         try:
@@ -68,23 +78,43 @@ class Receive(object):
         :return:  False: 不投注
         '''
         periods = self.get_periods()
-        numbers = self.__receive_number(periods)
+        print(periods)
+        data = self.__receive_number(periods)
 
-        if numbers is None:  # 获取号码失败
-            numbers = json.dumps({'isbet':False})
-            self.__save_number(numbers, periods)
-            return (False, 'Code Server No Response')
-        if not numbers['isbet']:  # 此号不买
-            self.__save_number(numbers, periods)
-            return (False, "Not buy")
-        else:   # 正常获取
-            self.__save_number(numbers, periods)
-            return (True, "Get bet Code Success")
+        if data is None:
+            return None
+        else:
+            self.__save_number(data, periods)
+            return json.loads(data)
+
+def get_bet_code():
+    loop_times = 24
+    delay = Delay()
+    receive = Receive()
+    for loop in range(loop_times):
+        data = receive.receive_and_save()
+        if not data:
+            delay.delay(10)
+            continue
+
+        if data['hasDate']:
+            if not data['isbet']:
+                print("此期不买")
+                return None
+            else:
+                return data
+
+        if (data['isbet']) and (not data["hasDate"]):
+            print("没有投注数据")
+            return None
+        delay.delay(10)
+    print("依然没有没有投注数据")
+    return None
+
 
 
 if __name__ == "__main__":
-    receive = Receive()
-    print(receive.get_numbers())
+    print(get_bet_code())
 
 
 
